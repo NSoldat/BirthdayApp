@@ -1,14 +1,16 @@
 const mongoose = require('mongoose');
 const User = require('../models/users');
+const itemsService = require('../services/items');
 
 const getAllUsers = async () => {
-    const users = await User.find({}).exec();
+    const users = await User.find({}).populate("wishList").exec();
     return users;
 }
-const getUserByName = async (name) => {
-    const foundUser = await User.findOne({name: name}).exec();
+const getUserById = async (id) => {
+    const foundUser = await User.findOne({_id: id}).populate("wishList").exec();
     return foundUser;
 };
+
 
 const getUsersWithUpcomingBirthdays = async () => {
   const currentDate = new Date();
@@ -36,13 +38,25 @@ const addNewUser = async (name, birthDate, wishList) => {
         birthDate,
         wishList
     });
+
     await newUser.save();
     return newUser;
 }
 
+const addItemToWishList = async (itemId, userId) => {
+    const foundUser = await User.findById(userId).exec();
+    console.log(foundUser); 
+    const foundItem = await itemsService.getItemById(itemId);
+    console.log(foundItem);
+    foundUser.wishList.push(itemId);
+    await foundUser.save();
+    return foundUser;
+}
+
 module.exports = {
     getAllUsers,
-    getUserByName,
+    getUserById,
     getUsersWithUpcomingBirthdays,
-    addNewUser
+    addNewUser,
+    addItemToWishList
 }

@@ -10,9 +10,7 @@ const usersSchema = new mongoose.Schema({
     type: Date, 
     required: true
   },
-  wishList: {
-   type: [String] 
-  }
+  wishList: [ {type: mongoose.Schema.Types.ObjectId, ref: 'items', default: []} ]
 });
 
 const User = mongoose.model('users', usersSchema);
