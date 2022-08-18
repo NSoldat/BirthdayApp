@@ -1,5 +1,5 @@
 const mongoose = require("mongoose");
-const Event = require("../models/birthdayEvent");
+const Event = require("../models/birthdayEvents");
 const paymentsService = require("../services/userPayments");
 const usersService = require("../services/users");
 

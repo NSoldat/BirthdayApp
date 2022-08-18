@@ -1,4 +1,4 @@
-const Payment = require('../models/userPayment');
+const Payment = require('../models/userPayments');
 
 const getAllUserPayments = async () => {
     return Payment.find({}).exec();
