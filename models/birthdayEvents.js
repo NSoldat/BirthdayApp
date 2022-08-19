@@ -19,7 +19,8 @@ const eventsSchema = new mongoose.Schema({
   },
   totalMoneyAmount: {
     type: Number,
-    required: true,
+    required: true, 
+    default: 0
   },
   notes: {
     type: String,

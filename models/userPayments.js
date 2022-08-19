@@ -11,7 +11,8 @@ const paymentsSchema = new mongoose.Schema({
     default: 500
   },
   message: {
-    type: String
+    type: String,
+    default: ""
   }
 
 });

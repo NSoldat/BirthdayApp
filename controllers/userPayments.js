@@ -16,7 +16,7 @@ const getAllUserPayments = async (req, res, next) => {
 const addNewPayment = async (req, res, next) => {
     const { userId, amount, message} = req.body;
     try {
-    if (!userId || !message) {
+    if (!userId) {
         const error = new Error("Check the forwarded data!");
         error.status = 400;
         throw error;

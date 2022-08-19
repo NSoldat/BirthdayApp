@@ -65,6 +65,11 @@ const addNewEvent = async (
 const addNewParticipant = async (birthdayEventId, participantId) => {
   const foundEvent = await Event.findById({ _id: birthdayEventId }).exec();
   foundEvent.participants.push(participantId);
+  // Find userPayment with participant Id
+  const foundParticipant = await paymentsService.getPaymentByUserId(participantId);
+  // Add amount from payment to totalMoneyAmount
+  foundEvent.totalMoneyAmount = foundEvent.totalMoneyAmount + foundParticipant.amount;
+  // Save new amount
   await foundEvent.save();
   return foundEvent;
 };
