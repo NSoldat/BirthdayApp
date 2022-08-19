@@ -1,3 +1,4 @@
+const mongoose = require('mongoose');
 const Payment = require('../models/userPayments');
 
 const getAllUserPayments = async () => {
@@ -11,9 +12,10 @@ const getPaymentByUserId = async (id) => {
 
 const addNewPayment = async (userId, amount, message) => {
     const newUserPayment = new Payment({
-        _id: userId,
-        amount,
-        message
+        _id: new mongoose.Types.ObjectId(),
+        userId: userId,
+        amount: amount,
+        message: message
     });
 
     await newUserPayment.save();
