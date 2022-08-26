@@ -3,27 +3,27 @@ const Event = require("../models/birthdayEvents");
 const paymentsService = require("../services/userPayments");
 const usersService = require("../services/users");
 
-const getAllBirthdayEvents = async (userId, open) => {
+const getAllBirthdayEvents = async (userId) => {
   let filteredEvents = [];
   const allEvents = await Event.find({}).where("birthdayPerson").ne(userId)
     .populate("birthdayPerson")
     .populate("participants")
     .populate("eventCreator")
     .exec();
-  if (open == "open") {
-    const usersWithUpcomingBirthdays = await usersService.getUsersWithUpcomingBirthdays();
-    const userIds = usersWithUpcomingBirthdays.map((user) => user._id);
+  // if (open == "open") {
+  //   const usersWithUpcomingBirthdays = await usersService.getUsersWithUpcomingBirthdays();
+  //   const userIds = usersWithUpcomingBirthdays.map((user) => user._id);
       
-    const openEvents = await Event.find({}).where("birthdayPerson").in(userIds)
-    .populate("birthdayPerson")
-    .populate("participants")
-    .populate("eventCreator")
-    .exec();
-    filteredEvents = openEvents;  
-  } else {
-    filteredEvents = allEvents;
-  }
-  return filteredEvents;
+  //   const openEvents = await Event.find({}).where("birthdayPerson").in(userIds)
+  //   .populate("birthdayPerson")
+  //   .populate("participants")
+  //   .populate("eventCreator")
+  //   .exec();
+  //   filteredEvents = openEvents;  
+  // } else {
+  //   filteredEvents = allEvents;
+  // }
+  return allEvents;
 };
 
 const getEventByBirthdayPersonId = async (birthdayPersonId) => {
