@@ -1,8 +1,9 @@
 const usersService = require("../services/users");
 
 const getAllUsers = async (req, res, next) => {
+  const userId = req.params.userId;
   try {
-    const allUsers = await usersService.getAllUsers();
+    const allUsers = await usersService.getAllUsers(userId);
     if(allUsers == null) {
       res.status(404).json();
     } else {
@@ -12,6 +13,20 @@ const getAllUsers = async (req, res, next) => {
     next(error);
   }
 };
+
+const getUserIdByUserName = async (req, res, next) => {
+  const userName = req.params.userName;
+  try {
+    const response = await usersService.getUserIdByUserName(userName);
+    if(response == null) {
+      res.status(404).json();
+    } else {
+      res.status(200).json(response);
+    }
+  } catch (error) {
+    next(error);
+  }
+}
 
 const getUserById = async (req, res, next) => {
   const id = req.params.id;
@@ -82,6 +97,7 @@ const addItemToWishList = async (req, res, next) => {
 }
 
 module.exports = {
+  getUserIdByUserName,
   getAllUsers,
   getUsersWithUpcomingBirthdays,
   getUserById,

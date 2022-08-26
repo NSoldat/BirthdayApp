@@ -3,7 +3,9 @@ const controller = require("../../controllers/users");
 
 const router = express.Router();
 
-router.get("/", controller.getAllUsers);
+router.get("/all/:userId", controller.getAllUsers);
+
+router.get("/name/:userName", controller.getUserIdByUserName);
 
 router.get("/birthdays/", controller.getUsersWithUpcomingBirthdays);
 

@@ -21,10 +21,13 @@ const TableComponent = () => {
   const [users, setUsers] = useState([]);
   const [error, setError] = useState(null);
 
+  const userId = localStorage.getItem("userId");
+
   const fetchUsersHandler = useCallback(async () => {
     try {
+      const url = "http://localhost:5000/users/all/" + userId;
       const response = await fetch(
-        "http://localhost:5000/users/all/62fa1c6d239202b2b8c994d5"
+        url
       );
       if (!response.ok) {
         throw new Error("Something went wrong!");

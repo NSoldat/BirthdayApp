@@ -1,4 +1,3 @@
-// App registruje api-je i poziva pomocne funkcije
 const express = require("express");
 const { urlencoded, json } = require("body-parser");
 const usersAPI = require("./routes/api/users");
@@ -6,10 +5,12 @@ const itemsAPI = require("./routes/api/items");
 const eventsAPI = require("./routes/api/birthdayEvents");
 const paymentsAPI = require("./routes/api/userPayments");
 const presentsAPI = require("./routes/api/presents");
+const cors = require('cors');
 
 const mongoose = require('mongoose');
 
 const app = express();
+app.use(cors());
 
 const databaseString = process.env.DB_STRING || 'mongodb://localhost:27017/birthdayApp';
 
