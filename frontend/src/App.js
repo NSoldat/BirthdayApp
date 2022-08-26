@@ -4,6 +4,9 @@ import React from "react";
 import { BrowserRouter, Route, Routes } from 'react-router-dom';
 import Login from "./Login";
 import Home from "./components/Home";
+import Event from "./components/Event";
+import Birthdays from "./components/Birthdays";
+import TableComponent from "./components/Table";
 
 function App() {
   return (
@@ -11,7 +14,11 @@ function App() {
     <BrowserRouter>
       <Routes>
         <Route path="/" element={<Login/>}/>
-        <Route path="/home" element={<Home/>}/>
+        <Route path="/home" element={<Home/>}>
+          <Route index element={<TableComponent/>}></Route>
+          <Route path="birthdays" element={<Birthdays/>}></Route>
+          <Route path="event" element={<Event/>}></Route>
+        </Route>
       </Routes>
       </BrowserRouter>
     </>

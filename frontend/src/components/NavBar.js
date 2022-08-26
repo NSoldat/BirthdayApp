@@ -23,12 +23,13 @@ export default function NavBar() {
               Log out
             </Button>
           </Box>
-          <Button color="inherit" sx={{ textTransform: "none", mr: 3 }}>
+          <Button onClick={() => {navigate("/home")}} color="inherit" sx={{ textTransform: "none", mr: 3 }}>
             Users
           </Button>
-          <Button color="inherit" sx={{ textTransform: "none", mr: 3 }}>
+          <Button onClick={() => {navigate("/home/birthdays")}} color="inherit" sx={{ textTransform: "none", mr: 3 }}>
             Birthdays
           </Button>
+          
           <Button color="inherit" sx={{ textTransform: "none", mr: 3 }}>
             My Wishlist
           </Button>
