@@ -1,14 +1,14 @@
 const birthdayEventsService = require("../services/birthdayEvents");
 
 const getAllBirthdayEvents = async (req, res, next) => {
-  const { userId } = req.params;
+  const { userId, open } = req.params;
   try {
     if(!userId) {
         const error = new Error("You have to pass your user id in order to get events!");
         error.status = 400;
         throw error;
     }
-    const allEvents = await birthdayEventsService.getAllBirthdayEvents(userId);
+    const allEvents = await birthdayEventsService.getAllBirthdayEvents(userId, open);
     if (allEvents == null) {
       res.status(404).json();
     } else {

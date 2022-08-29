@@ -7,8 +7,9 @@ import { Container } from "@mui/system";
 import TableHead from "@mui/material/TableHead";
 import TableRow from "@mui/material/TableRow";
 import Paper from "@mui/material/Paper";
-import { IconButton, Menu, MenuItem } from "@mui/material";
+import { IconButton, Menu, MenuItem, Checkbox } from "@mui/material";
 import MoreHorizIcon from "@mui/icons-material/MoreHoriz";
+
 import {
   usePopupState,
   bindTrigger,
@@ -26,8 +27,30 @@ const TableCell = withStyles({
 const Birthdays = () => {
   const [birthdayEvents, setBirthdayEvents] = useState([]);
   const [error, setError] = useState(null);
+  const [checked, setChecked] = useState(false);
 
   const user = localStorage.getItem("userId");
+
+  const formatResponse = (response) => {
+    const mappedData = response.map((obj) => {
+      const birthdayPerson = obj.birthdayPerson;
+      const birthDate = birthdayPerson.birthDate;
+      const currentYear = new Date().getFullYear();
+      const birthdayDate = new Date(birthDate);
+      const getBirthdayMonth = birthdayDate.getMonth();
+      const getBirthdayDay = birthdayDate.getDate();
+      const birthdayString =
+        getBirthdayDay + "." + getBirthdayMonth + "." + currentYear;
+
+      const birthdayPersonObj = {
+        ...birthdayPerson,
+        birthDate: birthdayString,
+      };
+
+      return { ...obj, birthdayPerson: birthdayPersonObj };
+    });
+    return mappedData;
+  };
 
   const fetchBirthdayEvents = useCallback(async () => {
     try {
@@ -37,20 +60,22 @@ const Birthdays = () => {
         throw new Error("Something went wrong!");
       }
       const data = await response.json();
-      const mappedData = data.map((obj) => {
-        const birthdayPerson = obj.birthdayPerson;
-        const birthDate = birthdayPerson.birthDate;
-        const currentYear = new Date().getFullYear();
-        const birthdayDate = new Date(birthDate);
-        const getBirthdayMonth = birthdayDate.getMonth();
-        const getBirthdayDay = birthdayDate.getDate();
-        const birthdayString = getBirthdayDay + '.' + getBirthdayMonth + '.' + currentYear;
-        
-        const birthdayPersonObj = {...birthdayPerson, birthDate: birthdayString};
+      const mappedData = formatResponse(data);
+      setBirthdayEvents(mappedData);
+    } catch (error) {
+      setError(error.message);
+    }
+  }, []);
 
-        return {...obj, birthdayPerson: birthdayPersonObj}
-      })
-      console.log(mappedData);
+  const fetchCurrent = useCallback(async () => {
+    try {
+      const url = "http://localhost:5000/events/" + user + "/open";
+      const response = await fetch(url);
+      if (!response.ok) {
+        throw new Error("Something went wrong!");
+      }
+      const data = await response.json();
+      const mappedData = formatResponse(data);
       setBirthdayEvents(mappedData);
     } catch (error) {
       setError(error.message);
@@ -58,9 +83,14 @@ const Birthdays = () => {
   }, []);
 
   useEffect(() => {
-    fetchBirthdayEvents();
-  }, [fetchBirthdayEvents]);
+    if (checked) {
+      fetchCurrent();
+    } else {
+      fetchBirthdayEvents();
+    }
+  }, [checked, fetchBirthdayEvents, fetchCurrent]);
 
+  // TODO: Implement error handling when fetching
   if (error) {
     // showErrorModal
   }
@@ -71,6 +101,15 @@ const Birthdays = () => {
 
   return (
     <Container component={Paper}>
+      <div align="right">
+        Show only current{" "}
+        <Checkbox
+          checked={checked}
+          onChange={() => {
+            setChecked(!checked);
+          }}
+        />
+      </div>
       <Table
         sx={{
           minWidth: 650,
