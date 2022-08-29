@@ -52,24 +52,8 @@ const Birthdays = () => {
     return mappedData;
   };
 
-  const fetchBirthdayEvents = useCallback(async () => {
+  const fetchBirthdayEvents = useCallback(async (url) => {
     try {
-      const url = "http://localhost:5000/events/" + user;
-      const response = await fetch(url);
-      if (!response.ok) {
-        throw new Error("Something went wrong!");
-      }
-      const data = await response.json();
-      const mappedData = formatResponse(data);
-      setBirthdayEvents(mappedData);
-    } catch (error) {
-      setError(error.message);
-    }
-  }, []);
-
-  const fetchCurrent = useCallback(async () => {
-    try {
-      const url = "http://localhost:5000/events/" + user + "/open";
       const response = await fetch(url);
       if (!response.ok) {
         throw new Error("Something went wrong!");
@@ -83,12 +67,12 @@ const Birthdays = () => {
   }, []);
 
   useEffect(() => {
+    let url = "http://localhost:5000/events/" + user;
     if (checked) {
-      fetchCurrent();
-    } else {
-      fetchBirthdayEvents();
+      url = url + "/open";
     }
-  }, [checked, fetchBirthdayEvents, fetchCurrent]);
+    fetchBirthdayEvents(url);
+  }, [checked, fetchBirthdayEvents]);
 
   // TODO: Implement error handling when fetching
   if (error) {
