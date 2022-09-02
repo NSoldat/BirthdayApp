@@ -41,10 +41,11 @@ const Wishlist = () => {
       }
       const userData = await response.json();
       setWishlist(userData.wishList);
+      console.log(userData.wishList);
     } catch (error) {
       setError(error.message);
     }
-  }, []);
+  }, [userId]);
 
   useEffect(() => {
     fetchUserHandler();

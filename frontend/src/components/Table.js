@@ -26,31 +26,47 @@ const TableComponent = () => {
   const fetchUsersHandler = useCallback(async () => {
     try {
       const url = "http://localhost:5000/users/all/" + userId;
-      const response = await fetch(
-        url
-      );
+      const response = await fetch(url);
       if (!response.ok) {
         throw new Error("Something went wrong!");
       }
       const data = await response.json();
-      const mappedData = data.map((obj) => {
-        return { ...obj, birthDate: new Date(obj.birthDate) };
-      });
-      const sortedData = mappedData.sort(
-        (obj1, obj2) => Number(obj1.birthDate) - Number(obj2.birthDate)
-      );
 
-      console.log(sortedData);
-      setUsers(sortedData);
+      data.sort((obj1, obj2) => {
+        const obj1Date = new Date(obj1.birthDate);
+        const obj2Date = new Date(obj2.birthDate);
+        
+        const ad = new Date();
+        const bd = new Date();
+
+        ad.setDate(obj1Date.getDate());
+        ad.setMonth(obj1Date.getMonth());
+        bd.setDate(obj2Date.getDate());
+        bd.setMonth(obj2Date.getMonth());
+        return ad - bd;
+      });
+
+      const mappedData = data.map((obj) => {
+        const birthDateObject = new Date(obj.birthDate);
+        const month = birthDateObject.getMonth();
+        const day = birthDateObject.getDate();
+        const currentDate = new Date();
+        const birthDateString = day + "." + month + "." + currentDate.getFullYear();
+       return { ...obj, birthDate: birthDateString };
+      });
+
+      console.log(mappedData);
+      setUsers(mappedData);
     } catch (error) {
       setError(error.message);
     }
   }, []);
+
   useEffect(() => {
     fetchUsersHandler();
   }, [fetchUsersHandler]);
 
-  if(error) {
+  if (error) {
     // create error modal
   }
 
@@ -58,7 +74,7 @@ const TableComponent = () => {
     <Container component={Paper}>
       <Table
         sx={{
-          m:3,
+          m: 3,
           minWidth: 650,
           [`& .${tableCellClasses.root}`]: {
             borderBottom: "none",
@@ -79,7 +95,7 @@ const TableComponent = () => {
                 {user.name}
               </TableCell>
               <TableCell align="right">
-                {user.birthDate.toDateString()}
+                {user.birthDate}
               </TableCell>
               <TableCell align="right">
                 <ContextMenu user={user} />

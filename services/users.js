@@ -18,7 +18,9 @@ const getUserIdByUserName = async (name) => {
 };
 
 const getUserById = async (id) => {
-  const foundUser = await User.findOne({ _id: id }).populate("wishList").exec();
+  console.log(id);
+  const foundUser = await User.findById(id).populate("wishList").exec();
+  console.log(foundUser);
   return foundUser;
 };
 
