@@ -29,7 +29,7 @@ const ContextMenu = (props) => {
     const currentDay = currentDate.getDate();
     // User has an upcoming birthday
     if(currentMonth < birthdayMonth || (currentMonth === birthdayMonth && currentDay < birthdayDay)) {
-        navigate("/event");
+        navigate("/home/event");
     } else {
         setDisableButton(true);
     }

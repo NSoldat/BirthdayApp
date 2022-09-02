@@ -58,6 +58,7 @@ const TableComponent = () => {
     <Container component={Paper}>
       <Table
         sx={{
+          m:3,
           minWidth: 650,
           [`& .${tableCellClasses.root}`]: {
             borderBottom: "none",

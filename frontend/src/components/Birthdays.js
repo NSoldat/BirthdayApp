@@ -3,18 +3,15 @@ import { withStyles } from "@mui/styles";
 import Table from "@mui/material/Table";
 import TableBody from "@mui/material/TableBody";
 import MuiTableCell, { tableCellClasses } from "@mui/material/TableCell";
-import { Container } from "@mui/system";
+import { Container, Box } from "@mui/system";
 import TableHead from "@mui/material/TableHead";
 import TableRow from "@mui/material/TableRow";
 import Paper from "@mui/material/Paper";
-import { IconButton, Menu, MenuItem, Checkbox } from "@mui/material";
+import { IconButton, Menu, MenuItem, Checkbox, Modal } from "@mui/material";
 import MoreHorizIcon from "@mui/icons-material/MoreHoriz";
 
-import {
-  usePopupState,
-  bindTrigger,
-  bindMenu,
-} from "material-ui-popup-state/hooks";
+import PopupState, { bindTrigger, bindMenu } from "material-ui-popup-state";
+import BirthdayEvent from "./BirthdayEvent";
 
 const TableCell = withStyles({
   root: {
@@ -29,7 +26,7 @@ const Birthdays = () => {
   const [error, setError] = useState(null);
   const [checked, setChecked] = useState(false);
 
-  const user = localStorage.getItem("userId");
+  const userId = localStorage.getItem("userId");
 
   const formatResponse = (response) => {
     const mappedData = response.map((obj) => {
@@ -60,6 +57,7 @@ const Birthdays = () => {
       }
       const data = await response.json();
       const mappedData = formatResponse(data);
+      console.log(mappedData);
       setBirthdayEvents(mappedData);
     } catch (error) {
       setError(error.message);
@@ -67,7 +65,7 @@ const Birthdays = () => {
   }, []);
 
   useEffect(() => {
-    let url = "http://localhost:5000/events/" + user;
+    let url = "http://localhost:5000/events/" + userId;
     if (checked) {
       url = url + "/open";
     }
@@ -78,65 +76,134 @@ const Birthdays = () => {
   if (error) {
     // showErrorModal
   }
-  const popupState = usePopupState({
-    variant: "popover",
-    popupId: "eventMenu",
-  });
+  const [open, setOpen] = useState(false);
+
+  const handleOpen = () => {
+    setOpen(true);
+  };
+
+  const handleClose = () => {
+    setOpen(false);
+  };
+
+  const addPaymentHandler = async (payment, birthdayEvent) => {
+    const response = await fetch("http://localhost:5000/payments", {
+      method: "POST",
+      body: JSON.stringify(payment),
+      headers: {
+        "Content-Type": "application/json",
+      },
+    });
+    if(!response.ok) {
+      throw new Error("Something went wrong");
+    }
+    const data = await response.json();
+    const participantId = data._id;
+    const reqBody = { participantId };
+
+    const url = "http://localhost:5000/events/" + birthdayEvent._id;
+    const result = await fetch(url, {
+      method: "PUT",
+      body: JSON.stringify(reqBody),
+      headers: {
+        "Content-Type": "application/json",
+      },
+    });
+    const updatedEvent = await result.json();
+    console.log("Azuriran event: ", updatedEvent);
+    console.log("Nova uplata: ", data);
+  };
 
   return (
     <Container component={Paper}>
-      <div align="right">
-        Show only current{" "}
-        <Checkbox
-          checked={checked}
-          onChange={() => {
-            setChecked(!checked);
+      <Box sx={{ m: 3 }}>
+        <div align="right">
+          Show only current{" "}
+          <Checkbox
+            checked={checked}
+            onChange={() => {
+              setChecked(!checked);
+            }}
+          />
+        </div>
+        <Table
+          sx={{
+            minWidth: 650,
+            [`& .${tableCellClasses.root}`]: {
+              borderBottom: "none",
+            },
           }}
-        />
-      </div>
-      <Table
-        sx={{
-          minWidth: 650,
-          [`& .${tableCellClasses.root}`]: {
-            borderBottom: "none",
-          },
-        }}
-      >
-        <TableHead>
-          <TableRow>
-            <TableCell align="right">Birthday user</TableCell>
-            <TableCell align="right">Birthday date</TableCell>
-            <TableCell align="right">Organizer</TableCell>
-            <TableCell align="right">Action</TableCell>
-          </TableRow>
-        </TableHead>
-        <TableBody>
-          {birthdayEvents.map((event) => (
-            <TableRow key={event._id}>
-              <TableCell align="right" component="th" scope="row">
-                {event.birthdayPerson.name}
-              </TableCell>
-              <TableCell align="right">
-                {event.birthdayPerson.birthDate}
-              </TableCell>
-              <TableCell align="right">{event.eventCreator.name}</TableCell>
-              <TableCell align="right">
-                <IconButton
-                  variant="contained"
-                  color="inherit"
-                  {...bindTrigger(popupState)}
-                >
-                  <MoreHorizIcon />
-                </IconButton>
-                <Menu {...bindMenu(popupState)}>
-                  <MenuItem>Create new event</MenuItem>
-                  <MenuItem>Buy present</MenuItem>
-                </Menu>
-              </TableCell>
+        >
+          <TableHead>
+            <TableRow>
+              <TableCell align="right">Birthday user</TableCell>
+              <TableCell align="right">Birthday date</TableCell>
+              <TableCell align="right">Organizer</TableCell>
+              <TableCell align="right">Action</TableCell>
             </TableRow>
-          ))}
-        </TableBody>
-      </Table>
+          </TableHead>
+          <TableBody>
+            {birthdayEvents.map((event, i) => (
+              <TableRow key={event._id}>
+                <TableCell align="right" component="th" scope="row">
+                  {event.birthdayPerson.name}
+                </TableCell>
+                <TableCell align="right">
+                  {event.birthdayPerson.birthDate}
+                </TableCell>
+                <TableCell align="right">{event.eventCreator.name}</TableCell>
+                <TableCell align="right">
+                  <PopupState variant="popover" popupId={event._id}>
+                    {(popupState) => (
+                      <>
+                        <IconButton
+                          variant="contained"
+                          color="inherit"
+                          {...bindTrigger(popupState)}
+                        >
+                          <MoreHorizIcon />
+                        </IconButton>
+                        <Menu {...bindMenu(popupState)}>
+                          <MenuItem onClick={handleOpen}>Get involved</MenuItem>
+                          <Modal
+                            open={open}
+                            onClose={handleClose}
+                            aria-labelledby="modal-modal-title"
+                            aria-describedby="modal-modal-description"
+                          >
+                            <Box
+                              sx={{
+                                position: "absolute",
+                                top: "50%",
+                                left: "50%",
+                                transform: "translate(-50%, -50%)",
+                                width: 300,
+                                height: 300,
+                                backgroundColor: "white",
+                                border: "2px solid #000",
+                                boxShadow: 24,
+                                p: 4,
+                              }}
+                            >
+                              <BirthdayEvent
+                                event={event}
+                                onAddPayment={addPaymentHandler}
+                              ></BirthdayEvent>
+                            </Box>
+                          </Modal>
+                          {userId === event.eventCreator._id && (
+                            <MenuItem>Buy present</MenuItem>
+                          )}
+                        </Menu>
+                      </>
+                    )}
+                  </PopupState>
+                </TableCell>
+              </TableRow>
+            ))}
+          </TableBody>
+        </Table>
+      </Box>
     </Container>
   );
 };

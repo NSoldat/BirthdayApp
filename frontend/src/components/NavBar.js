@@ -17,7 +17,7 @@ export default function NavBar() {
   return (
     <Box>
       <AppBar position="static">
-        <Toolbar>
+        <Toolbar >
           <Box display="flex" flexGrow={1}>
             <Button onClick={logoutUser} color="inherit" sx={{ textTransform: "none", mr: 3 }}>
               Log out
@@ -30,7 +30,7 @@ export default function NavBar() {
             Birthdays
           </Button>
           
-          <Button color="inherit" sx={{ textTransform: "none", mr: 3 }}>
+          <Button onClick={() => {navigate("/home/wishlist")}} color="inherit" sx={{ textTransform: "none", mr: 3 }}>
             My Wishlist
           </Button>
           <IconButton color="inherit">

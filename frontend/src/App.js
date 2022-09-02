@@ -7,6 +7,7 @@ import Home from "./components/Home";
 import Event from "./components/Event";
 import Birthdays from "./components/Birthdays";
 import TableComponent from "./components/Table";
+import Wishlist from "./components/Wishlist";
 
 function App() {
   return (
@@ -18,6 +19,7 @@ function App() {
           <Route index element={<TableComponent/>}></Route>
           <Route path="birthdays" element={<Birthdays/>}></Route>
           <Route path="event" element={<Event/>}></Route>
+          <Route path="wishlist" element={<Wishlist/>}></Route>
         </Route>
       </Routes>
       </BrowserRouter>
